@@ -32,11 +32,11 @@ public class RunAPI : IRunAPI
     public Json run(string lang, Json files, Json options, Json dependencies) @safe
     {
         import std.conv : to;
-        import std.array : split, join;
-        import viva.io : println;
+        import std.base64 : Base64;
+        import std.array : split, join, appender;
         import viva.docker : DockerOptions, runDockerShell;
-        import dide.model : Result;
         import dide.util.language : dockerImageFromLanguage;
+        import dide.model : Result, DideError;
 
         const(string) jsonData = serializeToJsonString([
             "language": serializeToJson(lang),
@@ -45,32 +45,26 @@ public class RunAPI : IRunAPI
             "dependencies": dependencies
         ]);
 
-        string runnerCommand = "java -jar --enable-preview runner " ~ jsonData;
+        auto builder = appender!string();
+        Base64.encode(jsonData, builder);
+        string encodedData = builder.data();
+
+        string runnerCommand = "./runner " ~ encodedData;
 
         string dockerImage = dockerImageFromLanguage(lang);
         if (dockerImage is null)
         {
-            struct Error
-            {
-                string code;
-                string status;
-                string message;
-            }
-
             return serializeToJson(
-                Error("404", "lang image not found", "docker image for lang '" ~ lang ~ "' not found")
+                DideError("404", "lang image not found", "docker image for lang '" ~ lang ~ "' not found")
             );
         }
         DockerOptions dockerOptions = DockerOptions(dockerImageFromLanguage(lang), runnerCommand);
-        string rawResult = runDockerShell(dockerOptions);
-
-        string fixedResult = join(rawResult.split("\n")[2..$], "\n");
-        Json rawJson = parseJson(fixedResult);
+        string res = runDockerShell(dockerOptions);
+        Json rawJson = parseJson(res);
 
         return serializeToJson(Result(
             rawJson["stdout"].to!string,
-            rawJson["stderr"].to!string,
-            rawJson["error"].to!string
+            rawJson["stderr"].to!string
         ));
     }
 }

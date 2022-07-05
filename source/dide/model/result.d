@@ -10,7 +10,4 @@ public struct Result
 
     /// stderr
     string stderr;
-
-    /// possible error
-    string error;
 }

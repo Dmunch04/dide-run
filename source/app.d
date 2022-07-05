@@ -3,19 +3,13 @@ import vibe.d;
 private void handleError(HTTPServerRequest _, HTTPServerResponse res, HTTPServerErrorInfo error)
 {
     import std.conv : to;
+    import dide.model : DideError;
 
     string errorDebug = "";
     debug errorDebug = error.debugMessage;
 
-    struct Error
-    {
-        string code;
-        string status;
-        string message;
-    }
-
     res.contentType = "application/json";
-    res.writeBody(serializeToJsonString(["error": Error(
+    res.writeBody(serializeToJsonString(["error": DideError(
         error.code.to!string,
         error.message,
         error.debugMessage
