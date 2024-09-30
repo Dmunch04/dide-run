@@ -19,7 +19,7 @@ public interface IRunAPI
     @bodyParam("entry", "entry")
     @bodyParam("options", "options")
     @bodyParam("dependencies", "dependencies")
-    Json run(string lang, Json files, Json options, Json dependencies) @safe;
+    Json run(string lang, Json files, string entry, Json options, Json dependencies) @safe;
 }
 
 /++
