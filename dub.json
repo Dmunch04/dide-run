@@ -5,7 +5,7 @@
 	"copyright": "Copyright © 2021, Munchii",
 	"dependencies": {
 		"vibe-d": "~>0.10.1",
-		"viva": "~>0.2.0-alpha"
+		"viva": "~>0.2.1-alpha"
 	},
 	"description": "REST API for dide",
 	"license": "MIT",
