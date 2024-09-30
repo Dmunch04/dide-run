@@ -42,7 +42,7 @@ public class RunAPI : IRunAPI
         const(string) jsonData = serializeToJsonString([
             "language": serializeToJson(lang),
             "files": files,
-            "entry": entry,
+            "entry": serializeToJson(entry),
             "options": serializeToJson(options),
             "dependencies": dependencies
         ]);
