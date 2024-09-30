@@ -16,6 +16,7 @@ public interface IRunAPI
     @method(HTTPMethod.POST)
     @bodyParam("lang", "language")
     @bodyParam("files", "files")
+    @bodyParam("entry", "entry")
     @bodyParam("options", "options")
     @bodyParam("dependencies", "dependencies")
     Json run(string lang, Json files, Json options, Json dependencies) @safe;
@@ -29,7 +30,7 @@ public class RunAPI : IRunAPI
     /++
      +
      +/
-    public Json run(string lang, Json files, Json options, Json dependencies) @safe
+    public Json run(string lang, string entry, Json files, Json options, Json dependencies) @safe
     {
         import std.conv : to;
         import std.base64 : Base64;
@@ -41,6 +42,7 @@ public class RunAPI : IRunAPI
         const(string) jsonData = serializeToJsonString([
             "language": serializeToJson(lang),
             "files": files,
+            "entry": entry,
             "options": serializeToJson(options),
             "dependencies": dependencies
         ]);
@@ -58,8 +60,8 @@ public class RunAPI : IRunAPI
                 DideError("404", "lang image not found", "docker image for lang '" ~ lang ~ "' not found")
             );
         }
-        DockerOptions dockerOptions = DockerOptions(dockerImageFromLanguage(lang), runnerCommand);
-        string res = runDockerShell(dockerOptions);
+        DockerOptions dockerOptions = DockerOptions(dockerImage, runnerCommand);
+        string res = runDockerShell(dockerOptions, sudo:false);
         Json rawJson = parseJson(res);
 
         return serializeToJson(Result(
