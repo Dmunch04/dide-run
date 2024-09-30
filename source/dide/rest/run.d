@@ -30,7 +30,7 @@ public class RunAPI : IRunAPI
     /++
      +
      +/
-    public Json run(string lang, string entry, Json files, Json options, Json dependencies) @safe
+    public Json run(string lang, Json files, string entry, Json options, Json dependencies) @safe
     {
         import std.conv : to;
         import std.base64 : Base64;
